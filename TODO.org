@@ -1,7 +1,8 @@
-* TODOs
+#+TITLE: TODOs
+#+OPTIONS: tex:t
 ** TODO investigate dynamic objects
-*** add visualization: After reconstructing a 3D point $P$ at $t_{i+1}$, project P in the image at $t_i$ and print line connecting it with the 2D feature correspondence from $p_i$, which has been used for reconstruction.
-*** $\rightarrow$ the goal is to identify dynamic objects during reconstruction to become more robust to violations of the static underlying scene assumption
+*** add visualization: After reconstructing a 3D point P at t_{i+1}, project P in the image at t_i and print line connecting it with the 2D feature correspondence from p_i, which has been used for reconstruction.
+*** \rightarrow the goal is to identify dynamic objects during reconstruction to become more robust to violations of the static underlying scene assumption
 ** TODO define arrays like indices, points2D and points3D global in MotionEstimation to reduce arguments in functions -> or maybe save directly in frame class
 ** TODO make frame class
 ** TODO clear interface in the end, i.e. delete redundant arrays and refactor classes
