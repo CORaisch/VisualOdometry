@@ -1,0 +1,8 @@
+* TODOs
+** TODO define arrays like indices, points2D and points3D global in MotionEstimation to reduce arguments in functions -> or maybe save directly in frame class
+** TODO make frame class
+** TODO clear interface in the end, i.e. delete redundant arrays and refactor classes
+** TODO refactor function: matchCorrORBEpiConstraint
+*** in for loops replace int -> size_t
+*** in for loops pre instead postincrement (++i)
+** TODO add SFMViz from L_SLAM code for more interactive visualization
