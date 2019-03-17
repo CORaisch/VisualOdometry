@@ -20,7 +20,6 @@ Frame::Frame(Logging& _log, const Mat& _img_l, const Mat& _img_r, const double _
              Log(_log), img_l(_img_l), img_r(_img_r), fx(_fx), fy(_fy), cx(_cx), cy(_cy), bfx(_bfx),\
              F(_F), orb_extractor_l(_orb_l), orb_extractor_r(_orb_r)
 {
-
     /* compute stereo correspondences */
     extractStereoCorrespondences(bDebugMode);
 

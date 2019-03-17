@@ -11,7 +11,7 @@ using namespace cv;
 
 // dataset parameters
 std::string base_path, base_calib, path_imgs_grey_l, path_imgs_grey_r, \
-            path_imgs_rgb_l, path_imgs_rgb_r;
+    path_imgs_rgb_l, path_imgs_rgb_r;
 
 // keyhandling parameters
 bool f_pause, f_verbose;
@@ -31,7 +31,7 @@ int main(int argc, char **argv)
     // local variables
     VideoCapture cap_grey_l, cap_grey_r, cap_rgb_l, cap_rgb_r;
     Mat img_grey_l, img_grey_r, img_rgb_l, img_rgb_r;
-    double t_start, t_end;
+    double t_start, t_end, t_est_motion, t_viz_3d, t_viz_bv;
     char key;
 
     // initialize according to command line arguments
@@ -89,12 +89,20 @@ int main(int argc, char **argv)
             // convert images to CV_8UC1
             cvtColor(img_grey_l, img_grey_l, COLOR_RGB2GRAY);
             cvtColor(img_grey_r, img_grey_r, COLOR_RGB2GRAY);
+            double t_tmp = (double) getTickCount(); // start clocking total time for motion estimation
             motion_estimator.estimateMotionSparse(img_grey_l, img_grey_r);
+            t_est_motion = (double(getTickCount()) - t_tmp)/getTickFrequency(); // end clocking total time for motion estimation
+
             // update data for 3D trajectory visualization
+            t_tmp = (double) getTickCount(); // start clocking total time for 3D visualization
             trajectoryViz.UpdateTrajectory(motion_estimator.cameraFrames);
+            t_viz_3d = (double(getTickCount()) - t_tmp)/getTickFrequency(); // end clocking total time for 3D visualization
+
             // visualize simple trajectory 2D from birdview
+            t_tmp = (double) getTickCount(); // start clocking total time for bird view visualization
             motion_estimator.visualize_birdview();
             // motion_estimator.visualize_birdview_gt(nCount++);
+            t_viz_bv = (double(getTickCount()) - t_tmp)/getTickFrequency(); // end clocking total time for bird view visualization
         }
         else if(estimator_mode == ESTIMATE_DENSE)
             motion_estimator.estimateMotionDense(img_grey_l, img_grey_r);
@@ -105,7 +113,10 @@ int main(int argc, char **argv)
 
         // stop clocking processing time
         t_end = (double(getTickCount()) - t_start)/getTickFrequency();
-        Log("", "\e[34m", "processing time: " + std::to_string(t_end) + "s | fps: "+ std::to_string(1.0/t_end), "\e[0m", "\n");
+        Log("", "\e[34m", "total time for motion estimation: " + std::to_string(t_est_motion) + "s | fps: "+ std::to_string(1.0/t_est_motion), "\e[0m", "\n");
+        Log("", "\e[34m", "total time for 3D visualization: " + std::to_string(t_viz_3d) + "s | fps: "+ std::to_string(1.0/t_viz_3d), "\e[0m", "\n");
+        Log("", "\e[34m", "total time for bird view visualization: " + std::to_string(t_viz_bv) + "s | fps: "+ std::to_string(1.0/t_viz_bv), "\e[0m", "\n");
+        Log("", "\e[34m", "total processing time: " + std::to_string(t_end) + "s | fps: "+ std::to_string(1.0/t_end), "\e[0m", "\n");
         if(!f_verbose)
             std::cout << "\033[s\033[34mprocessing time: " << t_end << "s | fps: " << std::to_string(1.0/t_end) << "\033[0m\033[u" << std::flush;
 
@@ -135,7 +146,7 @@ int main(int argc, char **argv)
     cv::imwrite(result_path, motion_estimator.img_vis);
 
     // exit programme on keyboard event
-    Log("\n", "\033[0m\033[1;47;30m", "End of Dataset reached successfully", "\033[0m", "\n");
+    Log("\n", "\033[0m\033[1;47;30m", "Reached End of Dataset successfully", "\033[0m", "\n");
     Log("Press any key to exit...");
     waitKey(0);
 
@@ -156,6 +167,7 @@ void show_all_frames(Mat& _img_grey_l, Mat& _img_grey_r, Mat& _img_rgb_l, Mat& _
 bool initAndParseCmdArgs(int argc, char **argv)
 {
     // set default flags
+    bool f_logging = false;
     f_pause   = true;
     f_verbose = false;
     estimator_mode = ESTIMATE_SPARSE;
@@ -217,9 +229,15 @@ bool initAndParseCmdArgs(int argc, char **argv)
                     estimator_mode = ESTIMATE_DENSE;
             }
         }
+        // check for verbose flag
         if(!std::strcmp(argv[i], "-v") || !std::strcmp(argv[i], "--verbose"))
         {
             f_verbose = true;
+        }
+        // check for logging flag
+        if (!std::strcmp(argv[i], "-l") || !std::strcmp(argv[i], "--logging"))
+        {
+            f_logging = true;
         }
     }
 
@@ -236,7 +254,7 @@ bool initAndParseCmdArgs(int argc, char **argv)
     // path_imgs_rgb_r  = base_path + "image_1/";
 
     // init logging
-    Log = Logging(f_verbose, "../logs/");
+    Log = Logging(f_verbose, f_logging, "../logs/");
 
     return true;
 }
@@ -249,6 +267,7 @@ void printUsage()
          << "-h --help                                print usage\n"
          << "-i --input [BASE IMAGES] [BASE CALIB]    set basepath to KITTI dataset (*)\n"
          << "-v --verbose                             print all debug messages\n"
+         << "-l --logging                             write output to logfile in log directory"
          << "-m --mode [0|1|2]                        switch estimator mode: 0 = sparse_naive, 1 = sparse, 2 = dense\n"
          << "\n(*) for the quicker use 3 standard KITTI datasets are predefined.\n"
          << "To use start visodom with \"-i {0-2}\" option."

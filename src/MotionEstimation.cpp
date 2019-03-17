@@ -18,13 +18,13 @@ void MotionEstimation::initMotionEstimator(Logging& _log, const std::string& _pa
     // load calibration data from dataset file
     if(iDataset == 0)
     {
-      // load KITTI calibration
-      readCalibFromFile_KITTI(_path_calib);
+        // load KITTI calibration
+        readCalibFromFile_KITTI(_path_calib);
     }
     else if(iDataset == 1)
     {
-      // load EuRoc calibration
-      readCalibFromFile_EuRoC(_path_calib);
+        // load EuRoc calibration
+        readCalibFromFile_EuRoC(_path_calib);
     }
     // init ORB feature extractor
     orb_cv = ORB::create(N_ORB_PTS, 1.2f, 8, 31, 0, 2, ORB::HARRIS_SCORE, 31);
@@ -45,7 +45,7 @@ void MotionEstimation::initMotionEstimator(Logging& _log, const std::string& _pa
 /* estimates camera pose via SFM using only stereo images for input */
 void MotionEstimation::estimateMotionSparse(const Mat& _img_l, const Mat& _img_r)
 {
-    /* implements simple structure from motion procedure without mapping over longer time */
+    /* implements simple structure from motion procedure without mapping over longer baselines */
     if(!isInitialized)
     {
         // create initial frame
@@ -61,10 +61,16 @@ void MotionEstimation::estimateMotionSparse(const Mat& _img_l, const Mat& _img_r
     }
     else
     {
-        // create frame t_i+1
+        // declare timing variables
+        double t_tmp, t_extract_features, t_bf_matching, t_ransac_pnp;
+        /* detect ORB features */
+        // create frame t_i
+        t_tmp = (double) getTickCount(); // start clocking time for feature extraction
         frame_t1 = Frame(Log, _img_l, _img_r, fx, fy, cx, cy, bf, F, orb_custom_l, orb_custom_r, isDebugMode);
+        t_extract_features = (double(getTickCount()) - t_tmp)/getTickFrequency(); // stop clocking time for feature extraction
 
         /* collect 3D-2D-correspondences */
+        t_tmp = (double) getTickCount(); // start clocking time for BF matching
         // collect all left image keypoints of frame t0 which have 3D points
         std::vector<MapPoint> assoc3D;
         assoc3D.reserve(frame_t0.keypoints_l.size());
@@ -74,14 +80,15 @@ void MotionEstimation::estimateMotionSparse(const Mat& _img_l, const Mat& _img_r
             MapPoint pt3D = frame_t0.points3D[i];
             if(pt3D.isValid())
             {
-                // this are the valid keypoints which have an 3D point in frame t0
+                // these are the valid keypoints which have an 3D point in frame t0
                 desc3D.push_back(frame_t0.descriptors_l.row(i));
                 assoc3D.push_back(frame_t0.points3D[i]);
             }
         }
-        // match collected points to left image keypoints of frame t1
+        // brute force match collected points from t0 with left image keypoints from frame t1
         std::vector<DMatch> matches;
         matcher.match(desc3D, frame_t1.descriptors_l, matches);
+        t_bf_matching = (double(getTickCount()) - t_tmp)/getTickFrequency(); // stop clocking time for BF matching
 
         /*******************************************************************/
         /* [invariant] 3D-2D correspondences:                              */
@@ -89,7 +96,9 @@ void MotionEstimation::estimateMotionSparse(const Mat& _img_l, const Mat& _img_r
         /* 2D point frame t1: frame_t1.keypoints_l[matches[i].trainIdx].pt */
         /*******************************************************************/
 
-        // reshape correspondences for passing to opencvs' solvePnP function
+
+        /* reshape correspondences for passing to opencvs' solvePnP function */
+        t_tmp = (double) getTickCount(); // start clocking time for RANSAC PnP
         std::vector<Point3f> correspondences3D;
         std::vector<Point2f> correspondences2D, correspondences3D_in2D;
         correspondences3D.reserve(matches.size());
@@ -105,8 +114,8 @@ void MotionEstimation::estimateMotionSparse(const Mat& _img_l, const Mat& _img_r
         // solve PnP in RANSAC scheme to be robust against outlier
         Mat rvec, tvec;
         std::vector<int> inliers;
-        solvePnPRansac(correspondences3D, correspondences2D, K, noArray(), rvec, tvec, false, 2000, 8.0,\
-                       0.99, inliers, SOLVEPNP_P3P);
+        solvePnPRansac(correspondences3D, correspondences2D, K, noArray(), rvec, tvec, false, 2000, 8.0, 0.99, inliers, SOLVEPNP_P3P);
+        t_ransac_pnp = (double(getTickCount()) - t_tmp)/getTickFrequency(); // stop clocking time for RANSAC PnP
 
         /* assign new pose to frame t1 */
         frame_t1.setPose(rvec, tvec);
@@ -116,8 +125,11 @@ void MotionEstimation::estimateMotionSparse(const Mat& _img_l, const Mat& _img_r
         Log("R:\n" + mat2str(frame_t1.cRw) + "\n");
         Log("t:\n" + mat2str(frame_t1.ctw) + "\n");
         Log("" + std::to_string(inliers.size()) + "/" + std::to_string(correspondences3D.size())\
-               + " (" + std::to_string((float(inliers.size())/float(correspondences3D.size()))*100)\
-               + "%) inliers\n");
+            + " (" + std::to_string((float(inliers.size())/float(correspondences3D.size()))*100)\
+            + "%) inliers\n");
+        Log("", "\e[34m", "total time for feature extraction: " + std::to_string(t_extract_features) + "s | fps: "+ std::to_string(1.0/t_extract_features), "\e[0m", "\n");
+        Log("", "\e[34m", "total time for BF matching: " + std::to_string(t_bf_matching) + "s | fps: "+ std::to_string(1.0/t_bf_matching), "\e[0m", "\n");
+        Log("", "\e[34m", "total time for RANSAC PnP: " + std::to_string(t_ransac_pnp) + "s | fps: "+ std::to_string(1.0/t_ransac_pnp), "\e[0m", "\n");
 
         /* triangulate new 3D points for frame t1 */
         // transform 3D points of frame t1 in worldspace according to new pose
@@ -136,8 +148,6 @@ void MotionEstimation::estimateMotionSparse(const Mat& _img_l, const Mat& _img_r
         /* set frame t0 to t1 */
         frame_t0 = frame_t1;
     }
-
-    // TODO visualize 3D points in worldspace using OpenGL app
 }
 
 /* visualize_birdview */
@@ -478,9 +488,9 @@ void MotionEstimation::drawEpipolarLines(const Mat& _F, const Mat& _img1, const 
     {
         cv::Scalar color(rng(256),rng(256),rng(256));
         line(outImg(rect2),
-              Point(0,-epilines1[i][2]/epilines1[i][1]),
-              Point(_img1.cols,-(epilines1[i][2]+epilines1[i][0]*_img1.cols)/epilines1[i][1]),
-              color);
+             Point(0,-epilines1[i][2]/epilines1[i][1]),
+             Point(_img1.cols,-(epilines1[i][2]+epilines1[i][0]*_img1.cols)/epilines1[i][1]),
+             color);
         circle(outImg(rect1), _points1[i], 3, Scalar(256,0,0), 1, CV_AA);
 
         // line(outImg(rect1),

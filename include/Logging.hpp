@@ -14,26 +14,31 @@ public:
     /* constructors */
     Logging()
     {
-        bLog_to_cmdline = false;
+        b_log_to_cmdline = false;
+        b_log_to_file = false;
         logfilename = "null";
     }
 
-    Logging(bool _f_logging, const std::string& filepath)
+    Logging(bool _f_cmdline, const bool _f_logging, const std::string& filepath)
     {
         #ifdef NDEBUG
-            bLog_to_cmdline = false;
+            b_log_to_cmdline = false;
         #else
-            bLog_to_cmdline = true;
+            b_log_to_cmdline = true;
         #endif
-        // if user activated logging from cmd line, use logging independent from build mode
-        bLog_to_cmdline = _f_logging;
+
+        // if user activated logging from cmdline, use logging independent from build mode
+        b_log_to_cmdline = _f_cmdline;
+
+        // set if logfile should be written
+        b_log_to_file = _f_logging;
 
         // open logfile
         double cpuTime = double(cv::getTickCount())/cv::getTickFrequency();
         logfilename = filepath + "log_" + std::to_string(cpuTime) + ".txt";
 
         // notify user about existance of logfile
-        std::cout << "logs will be written to \"" << logfilename << "\"" << std::endl;
+        std::cout << "logs will be written to \"" << logfilename << "\" if logging is enabled" << std::endl;
     }
 
     /* operators */
@@ -57,23 +62,26 @@ public:
 
 private:
     /* private member variablse */
-    bool bLog_to_cmdline;
+    bool b_log_to_cmdline, b_log_to_file;
     std::string logfilename;
 
     /* private member methodes */
     void writeToCMD(std::string const& _msg)
     {
         // write log to commandline if flag is set
-        if(bLog_to_cmdline)
+        if(b_log_to_cmdline)
             std::cout << _msg << std::flush;
     }
 
     void writeToLog(std::string const& _msg)
     {
         // write message to log file
-        logfile.open(logfilename, std::ios::app);
-        logfile << _msg;
-        logfile.close();
+        if(b_log_to_file)
+        {
+            logfile.open(logfilename, std::ios::app);
+            logfile << _msg;
+            logfile.close();
+        }
     }
 
 };

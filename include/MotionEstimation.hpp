@@ -48,7 +48,7 @@ public:
     // list of all estimated poses
     std::vector<Frame> cameraFrames;
     // rectified camera intrinsics
-    double fx, fy, cx, cy, bf;    
+    double fx, fy, cx, cy, bf;
 
 private:
     /* private sparse methodes naive */
