@@ -64,7 +64,7 @@ void Frame::triangulate3D()
     double x,y;
     // NOTE max depth to reconstruct with accepted uncertainty is recommended to be 40*baseline as suggested in:
     // Paz, Lina M., et al. "Large-scale 6-DOF SLAM with stereo-in-hand." IEEE transactions on robotics 24.5 (2008): 946-957.
-    float maxDepth = 40 * bfx/fx; 
+    float maxDepth = 40 * bfx/fx;
     points3D = std::vector<MapPoint>(keypoints_l.size(), MapPoint());
     for(size_t i = 0; i < keypoints_l.size(); ++i)
     {
