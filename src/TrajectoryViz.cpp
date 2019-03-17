@@ -84,7 +84,7 @@ void TrajectoryVisualizer::Run()
 
       cv::viz::WTrajectory wPath(this->vPoses, cv::viz::WTrajectory::PATH, this->dScale, cv::viz::Color::green());
       cv::viz::WTrajectoryFrustums wFrustrums(this->vPoses, this->mK, this->dScale, cv::viz::Color::blue());
-      cv::viz::WTrajectoryFrustums wCurrentPose(this->vCurrentPose, this->mK, this->dScale, cv::viz::Color::green());    
+      cv::viz::WTrajectoryFrustums wCurrentPose(this->vCurrentPose, this->mK, this->dScale, cv::viz::Color::green());
       wPath.setRenderingProperty(cv::viz::LINE_WIDTH, 4.0);
 
       /* render trajectory */
@@ -95,9 +95,9 @@ void TrajectoryVisualizer::Run()
       /* render point cloud */
       if(!this->vPoints.empty())
       {
-	  cv::viz::WCloud wPoints(this->vPoints, cv::viz::Color::red());
-	  wPoints.setRenderingProperty(cv::viz::POINT_SIZE, 3.0);
-	  v3dWindow.showWidget("Point Cloud", wPoints);
+          cv::viz::WCloud wPoints(this->vPoints, cv::viz::Color::red());
+          wPoints.setRenderingProperty(cv::viz::POINT_SIZE, 3.0);
+          v3dWindow.showWidget("Point Cloud", wPoints);
       }
     }
 
