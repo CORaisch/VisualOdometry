@@ -365,7 +365,6 @@ void Frame::drawEpipolarLines()
     std::vector<Vec<float,3>> epilines1, epilines2;
     std::vector<size_t> indices1, indices2;
     std::vector<Point2f> points2D_l, points2D_r;
-    std::cout << keypoints_l.size() << std::endl;
     getPointsFromMatches(matches, keypoints_l, keypoints_r, points2D_l, points2D_r, indices1, indices2);
     computeCorrespondEpilines(points2D_l, 1, F, epilines1);
     computeCorrespondEpilines(points2D_r, 2, F, epilines2);

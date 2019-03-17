@@ -141,9 +141,9 @@ int main(int argc, char **argv)
     }
 
     // print resulted image
-    double cpuTime = double(cv::getTickCount())/cv::getTickFrequency();
-    std::string result_path = base_path+"result_"+std::to_string(cpuTime)+".png";
-    cv::imwrite(result_path, motion_estimator.img_vis);
+    // double cpuTime = double(cv::getTickCount())/cv::getTickFrequency();
+    // std::string result_path = base_path+"result_"+std::to_string(cpuTime)+".png";
+    // cv::imwrite(result_path, motion_estimator.img_vis);
 
     // exit programme on keyboard event
     Log("\n", "\033[0m\033[1;47;30m", "Reached End of Dataset successfully", "\033[0m", "\n");
