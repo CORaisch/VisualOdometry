@@ -96,7 +96,6 @@ void MotionEstimation::estimateMotionSparse(const Mat& _img_l, const Mat& _img_r
         /* 2D point frame t1: frame_t1.keypoints_l[matches[i].trainIdx].pt */
         /*******************************************************************/
 
-
         /* reshape correspondences for passing to opencvs' solvePnP function */
         t_tmp = (double) getTickCount(); // start clocking time for RANSAC PnP
         std::vector<Point3f> correspondences3D;
@@ -141,8 +140,8 @@ void MotionEstimation::estimateMotionSparse(const Mat& _img_l, const Mat& _img_r
         /* DEBUG visualize backprojection of 3D-2D correspondences */
         if(isDebugMode)
         {
-            visualizeBackprojection(correspondences3D, correspondences2D, inliers);
-            visualizeOverlap(correspondences2D, correspondences3D_in2D, inliers);
+            // visualizeBackprojection(correspondences3D, correspondences2D, inliers);
+            // visualizeOverlap(correspondences2D, correspondences3D_in2D, inliers);
         }
 
         /* set frame t0 to t1 */
@@ -371,6 +370,7 @@ void MotionEstimation::extractStereoCorrORB_naive(const Mat& _in_img_l, const Ma
 
     /* DEBUG draw epipolar lines for detected features */
     drawEpipolarLines(F, _in_img_l, _in_img_r, _points_l, _points_r);
+    // drawEpipolarLines(fund_mat, _in_img_l, _in_img_r, _points_l, _points_r);
 
     /* DEBUG draw matches */
     Mat matches_img;
@@ -416,12 +416,9 @@ void MotionEstimation::estimateMotionDense(const Mat& _img_l, const Mat& _img_r)
 void MotionEstimation::reconstruct3DFromDisparityMap(const Mat& _in_img_l, const Mat& _in_img_r, std::vector<Point3f>& _out_points3D, std::vector<Point2f>& _out_points2D)
 {
     /* compute disparity map */
-    Mat img_conv_l, img_conv_r;
     Mat imgDisparity16S = Mat(_in_img_l.rows, _in_img_l.cols, CV_16S);
     int ndisp = int(fx/40.0);
-    cvtColor(_in_img_l, img_conv_l, COLOR_RGB2GRAY);
-    cvtColor(_in_img_r, img_conv_r, COLOR_RGB2GRAY);
-    stereoMatcher->compute(img_conv_l, img_conv_r, imgDisparity16S);
+    stereoMatcher->compute(_in_img_l, _in_img_r, imgDisparity16S);
 
     /* show disparity map */
     double minVal, maxVal;
@@ -561,14 +558,16 @@ void MotionEstimation::readCalibFromFile_KITTI(const std::string& _path_calib)
 
 void MotionEstimation::readCalibFromFile_EuRoC(const std::string& _path_calib)
 {
+    std::cout << "calib path: " << _path_calib << std::endl;
     // open file storage
-    std::string calib_file = _path_calib + "Calib.yaml";
-    FileStorage fs(calib_file, FileStorage::READ);
-    Log("", "\033[1;47;30m", "read calibration data from \"" + calib_file + "\"...", "", "");
+    FileStorage fs(_path_calib, FileStorage::READ);
+    Log("", "\033[1;47;30m", "read calibration data from \"" + _path_calib + "\"...", "", "");
 
-    // TODO read fx,fy,cx,cy,bf,camWidth,camHeight
-    // TODO create Prect00, Prect01 from this data -> lookup in KITTI Benchmark Paper how Prect must be organized
-    // TODO find solution for Fundamental Matrix -> easy: set I, adv.: use OpenCV method to estimate F
+    // FIXME check if Prect00 and Prect01 are set correctly
+    fs["LEFT.P"] >> Prect00;
+    fs["RIGHT.P"] >> Prect01;
+    fs["LEFT.R"] >> Rrect00; // TODO Rrect00 = essential matrix ?
+    fs["RIGHT.R"] >> Rrect01;
 
     fs.release();
 
@@ -595,11 +594,6 @@ void MotionEstimation::readCalibFromFile_EuRoC(const std::string& _path_calib)
     Log("\n\n", "\033[1;47;30m", "calibration data", "\033[0m", "\n\n");
     Log("Prect00:\n" + mat2str(Prect00) + "\n");
     Log("Prect01:\n" + mat2str(Prect01) + "\n");
-    Log("S00: " + mat2str(S00) + "\n");
-    Log("S01: " + mat2str(S01) + "\n");
-    Log("Srect00: " + mat2str(Srect00) + "\n");
-    Log("Srect01: " + mat2str(Srect01) + "\n");
-    Log("T01:\n" + mat2str(T01) + "\n");
     Log("Rrect00:\n" + mat2str(Rrect00) + "\n");
     Log("Rrect01:\n" + mat2str(Rrect01) + "\n");
     Log("K:\n" + mat2str(K) + "\n");
