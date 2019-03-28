@@ -113,8 +113,8 @@ int main(int argc, char **argv)
         /******************************************************************************/
 
         // load frames
-        img_grey_l = cv::imread(vstr_image_l[i], CV_LOAD_IMAGE_UNCHANGED);
-        img_grey_r = cv::imread(vstr_image_r[i], CV_LOAD_IMAGE_UNCHANGED);
+        img_grey_l = cv::imread(vstr_image_l[i], cv::IMREAD_UNCHANGED);
+        img_grey_r = cv::imread(vstr_image_r[i], cv::IMREAD_UNCHANGED);
 
         if(img_grey_l.empty())
         {

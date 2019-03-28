@@ -353,8 +353,8 @@ void Frame::drawEpipolarLines()
     // allow color drawing
     if (img_l.type() == CV_8U)
     {
-        cv::cvtColor(img_l, outImg(rect1), CV_GRAY2BGR);
-        cv::cvtColor(img_r, outImg(rect2), CV_GRAY2BGR);
+        cv::cvtColor(img_l, outImg(rect1), cv::COLOR_GRAY2BGR);
+        cv::cvtColor(img_r, outImg(rect2), cv::COLOR_GRAY2BGR);
     }
     else
     {
@@ -378,13 +378,13 @@ void Frame::drawEpipolarLines()
               Point(0,-epilines1[i][2]/epilines1[i][1]),
               Point(img_l.cols,-(epilines1[i][2]+epilines1[i][0]*img_l.cols)/epilines1[i][1]),
               color);
-        circle(outImg(rect1), points2D_l[i], 3, Scalar(256,0,0), 1, CV_AA);
+        circle(outImg(rect1), points2D_l[i], 3, Scalar(256,0,0), 1, cv::LINE_AA);
 
         // line(outImg(rect1),
         //       Point(0,-epilines2[i][2]/epilines2[i][1]),
         //       Point(img_r.cols,-(epilines2[i][2]+epilines2[i][0]*img_r.cols)/epilines2[i][1]),
         //       color);
-        circle(outImg(rect2), points2D_r[i], 3, Scalar(256,0,0), -1, CV_AA);
+        circle(outImg(rect2), points2D_r[i], 3, Scalar(256,0,0), -1, cv::LINE_AA);
     }
     // show epipolar lines
     imshow("selected features + corresponding epipolar lines", outImg);

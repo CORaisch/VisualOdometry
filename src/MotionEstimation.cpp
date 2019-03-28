@@ -212,8 +212,8 @@ void MotionEstimation::visualizeOverlap(const std::vector<Point2f>& corr2D,\
     /* get consecutive images */
     Mat img_t1, img_t0;
     std::vector<Frame>::iterator iter = cameraFrames.end();
-    cvtColor((iter-2)->img_l, img_t0, CV_GRAY2BGR);
-    cvtColor((iter-1)->img_l, img_t1, CV_GRAY2BGR);
+    cvtColor((iter-2)->img_l, img_t0, cv::COLOR_GRAY2BGR);
+    cvtColor((iter-1)->img_l, img_t1, cv::COLOR_GRAY2BGR);
     RNG rng(0);
 
     /* draw correspondences in images t0 and t1 */
@@ -226,11 +226,11 @@ void MotionEstimation::visualizeOverlap(const std::vector<Point2f>& corr2D,\
         {
             // draw features
             color = Scalar(rng(256),rng(256),rng(256));
-            circle(img_t0, corr3D[i], 5, color, 1, CV_AA);
-            circle(img_t1, corr2D[i], 5, color, 1, CV_AA);
+            circle(img_t0, corr3D[i], 5, color, 1, cv::LINE_AA);
+            circle(img_t1, corr2D[i], 5, color, 1, cv::LINE_AA);
 
             // draw line to connect features
-            line(img_t0, corr3D[i], corr2D[i], color, 3, CV_AA);
+            line(img_t0, corr3D[i], corr2D[i], color, 3, cv::LINE_AA);
 
             inlierCount++;
         }
@@ -248,7 +248,7 @@ void MotionEstimation::visualizeBackprojection(const std::vector<Point3f>& corr3
 {
     // prepare output image
     Mat img_backproj, img_outliers, img_selected;
-    cvtColor(cameraFrames.back().img_l, img_backproj, CV_GRAY2BGR);
+    cvtColor(cameraFrames.back().img_l, img_backproj, cv::COLOR_GRAY2BGR);
     img_outliers = Mat::zeros(img_backproj.rows, img_backproj.cols, img_backproj.type());
     // img_outliers = Mat(img_backproj.rows, img_backproj.cols, img_backproj.type());
     // img_outliers = Scalar(255,255,255);
@@ -286,7 +286,7 @@ void MotionEstimation::visualizeBackprojection(const std::vector<Point3f>& corr3
         }
 
         /* draw 2D correspondences */
-        circle(img_selected, corr2D[i], radius, color, circlethickness, CV_AA);
+        circle(img_selected, corr2D[i], radius, color, circlethickness, cv::LINE_AA);
 
         /* draw 3D correspondences */
         // backproject 3D correspondences
@@ -295,10 +295,10 @@ void MotionEstimation::visualizeBackprojection(const std::vector<Point3f>& corr3
         float tmp_x = (pt_cs.at<float>(0,0)*fx/pt_cs.at<float>(2,0)) + cx;
         float tmp_y = (pt_cs.at<float>(1,0)*fy/pt_cs.at<float>(2,0)) + cy;
         Point2f corr3D_backproj(tmp_x, tmp_y);
-        circle(img_selected, corr3D_backproj, radius, color, circlethickness, CV_AA);
+        circle(img_selected, corr3D_backproj, radius, color, circlethickness, cv::LINE_AA);
 
         /* draw line to connect correspondences */
-        line(img_selected, corr2D[i], corr3D_backproj, color, linethickness, CV_AA);
+        line(img_selected, corr2D[i], corr3D_backproj, color, linethickness, cv::LINE_AA);
     }
 
     // // add key in upper right corner of final image
@@ -315,12 +315,12 @@ void MotionEstimation::visualizeBackprojection(const std::vector<Point3f>& corr3
     // currentHeight += textsize.height;
     // textsize = getTextSize(txt1, fontface, fontscale, thickness, &baseline);
     // putText(img_backproj, txt0, Point2f(0,textsize.height), fontface, fontscale, Scalar(255,255,255), thickness, 8);
-    // circle(img_backproj, Point2f(7,10+currentHeight), 5, Scalar(128, 248, 13), 1, CV_AA);
-    // circle(img_backproj, Point2f(12,10+currentHeight), 5, Scalar(129,0,210), 1, CV_AA);
+    // circle(img_backproj, Point2f(7,10+currentHeight), 5, Scalar(128, 248, 13), 1, cv::LINE_AA);
+    // circle(img_backproj, Point2f(12,10+currentHeight), 5, Scalar(129,0,210), 1, cv::LINE_AA);
     // putText(img_backproj, txt1, Point2f(20,currentHeight+textsize.height+2), fontface, fontscale, Scalar(255,255,255), thickness, 8);
     // currentHeight += textsize.height;
     // textsize = getTextSize(txt2, fontface, fontscale, thickness, &baseline);
-    // line(img_outliers, Point2f(5,10+currentHeight), Point2f(15,10+currentHeight), Scalar::all(200), 1, CV_AA);
+    // line(img_outliers, Point2f(5,10+currentHeight), Point2f(15,10+currentHeight), Scalar::all(200), 1, cv::LINE_AA);
     // putText(img_backproj, txt2, Point2f(20,currentHeight+textsize.height+2), fontface, fontscale, Scalar(255,255,255), thickness, 8);
 
     /* alpha blend outliers and add key to the final image */
@@ -466,8 +466,8 @@ void MotionEstimation::drawEpipolarLines(const Mat& _F, const Mat& _img1, const 
     // allow color drawing
     if (_img1.type() == CV_8U)
     {
-        cv::cvtColor(_img1, outImg(rect1), CV_GRAY2BGR);
-        cv::cvtColor(_img2, outImg(rect2), CV_GRAY2BGR);
+        cv::cvtColor(_img1, outImg(rect1), cv::COLOR_GRAY2BGR);
+        cv::cvtColor(_img2, outImg(rect2), cv::COLOR_GRAY2BGR);
     }
     else
     {
@@ -488,13 +488,13 @@ void MotionEstimation::drawEpipolarLines(const Mat& _F, const Mat& _img1, const 
              Point(0,-epilines1[i][2]/epilines1[i][1]),
              Point(_img1.cols,-(epilines1[i][2]+epilines1[i][0]*_img1.cols)/epilines1[i][1]),
              color);
-        circle(outImg(rect1), _points1[i], 3, Scalar(256,0,0), 1, CV_AA);
+        circle(outImg(rect1), _points1[i], 3, Scalar(256,0,0), 1, cv::LINE_AA);
 
         // line(outImg(rect1),
         //       Point(0,-epilines2[i][2]/epilines2[i][1]),
         //       Point(_img2.cols,-(epilines2[i][2]+epilines2[i][0]*_img2.cols)/epilines2[i][1]),
         //       color);
-        circle(outImg(rect2), _points2[i], 3, Scalar(256,0,0), -1, CV_AA);
+        circle(outImg(rect2), _points2[i], 3, Scalar(256,0,0), -1, cv::LINE_AA);
     }
     // show epipolar lines
     imshow("epipolar lines", outImg);
