@@ -172,8 +172,10 @@ bool initAndParseCmdArgs(int argc, char **argv)
     f_verbose = false;
     estimator_mode = ESTIMATE_SPARSE;
     // set default dataset ("drive_0047_sync")
-    base_path  = "/home/claudio/Datasets/KITTI/RawData_2011_10_03_drive_0047_sync/2011_10_03_drive_0047_sync/";
-    base_calib = "/home/claudio/Datasets/KITTI/RawData_2011_10_03_drive_0047_sync/2011_10_03_calib/";
+    // base_path  = "/home/claudio/Datasets/KITTI/RawData_2011_10_03_drive_0047_sync/2011_10_03_drive_0047_sync/";
+    // base_calib = "/home/claudio/Datasets/KITTI/RawData_2011_10_03_drive_0047_sync/2011_10_03_calib/";
+    base_path  = "/home/claudio/Datasets/KITTI/RawData_2011_09_30_drive_0034_sync/2011_09_30_drive_0034_sync/";
+    base_calib = "/home/claudio/Datasets/KITTI/RawData_2011_09_30_drive_0034_sync/2011_09_30_calib/";
 
     // parse commandline arguments
     for (int i = 1; i < argc; ++i)
@@ -267,7 +269,7 @@ void printUsage()
          << "-h --help                                print usage\n"
          << "-i --input [BASE IMAGES] [BASE CALIB]    set basepath to KITTI dataset (*)\n"
          << "-v --verbose                             print all debug messages\n"
-         << "-l --logging                             write output to logfile in log directory"
+         << "-l --logging                             write output to logfile in log directory\n"
          << "-m --mode [0|1|2]                        switch estimator mode: 0 = sparse_naive, 1 = sparse, 2 = dense\n"
          << "\n(*) for the quicker use 3 standard KITTI datasets are predefined.\n"
          << "To use start visodom with \"-i {0-2}\" option."

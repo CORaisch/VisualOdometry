@@ -2,11 +2,9 @@
 #define _FRAME_HPP
 
 #include "Logging.hpp"
-#include "util.hpp"
-#include "ORBextractor.h"
 #include "MapPoint.hpp"
+#include "ORBextractor.h"
 #include <string>
-#include <thread>
 #include <opencv2/opencv.hpp>
 
 using namespace cv;

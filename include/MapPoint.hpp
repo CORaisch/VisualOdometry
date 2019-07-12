@@ -1,7 +1,6 @@
 #ifndef _MAPPOINT_HPP
 #define _MAPPOINT_HPP
 
-#include <string>
 #include <opencv2/opencv.hpp>
 
 using namespace cv;

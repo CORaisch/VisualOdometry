@@ -1,9 +1,6 @@
 #ifndef _MOTIONESTIMATION_HPP
 #define _MOTIONESTIMATION_HPP
 
-#include "Logging.hpp"
-#include "util.hpp"
-#include "ORBextractor.h"
 #include "Frame.hpp"
 #include <string>
 #include <thread>

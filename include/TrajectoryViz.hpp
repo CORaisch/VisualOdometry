@@ -3,11 +3,9 @@
 
 #include <opencv2/viz.hpp>
 #include <opencv2/calib3d.hpp>
-#include <iostream>
 #include <mutex>
 
 #include "Frame.hpp"
-#include "MapPoint.hpp"
 
 using namespace std;
 

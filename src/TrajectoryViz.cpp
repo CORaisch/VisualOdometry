@@ -1,5 +1,8 @@
 #include "TrajectoryViz.hpp"
 
+#include "MapPoint.hpp"
+#include <iostream>
+
 void TrajectoryVisualizer::Init(double fx, double fy, double cx, double cy)
 {
   // init members
