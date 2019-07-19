@@ -89,6 +89,24 @@ int main(int argc, char **argv)
             // convert images to CV_8UC1
             cvtColor(img_grey_l, img_grey_l, COLOR_RGB2GRAY);
             cvtColor(img_grey_r, img_grey_r, COLOR_RGB2GRAY);
+            Mat orig_grey_l = img_grey_l.clone();
+            Mat orig_grey_r = img_grey_r.clone();
+
+            //// beg DEBUG
+            // apply laplacian operator on input images
+            // GaussianBlur( img_grey_l, img_grey_l, Size(3, 3), 0, 0, BORDER_DEFAULT );
+            // GaussianBlur( img_grey_r, img_grey_r, Size(3, 3), 0, 0, BORDER_DEFAULT );
+            // Mat tmp_l, tmp_r;
+            // Laplacian( img_grey_l, tmp_l, CV_16S, 3, 1, 0, BORDER_DEFAULT );
+            // Laplacian( img_grey_r, tmp_r, CV_16S, 3, 1, 0, BORDER_DEFAULT );
+            // // converting back to CV_8U
+            // convertScaleAbs( tmp_l, img_grey_l );
+            // convertScaleAbs( tmp_r, img_grey_r );
+            // double alpha = 0.4;
+            // addWeighted(orig_grey_l, alpha, img_grey_l, 1.0-alpha, 0.0, img_grey_l);
+            // addWeighted(orig_grey_r, alpha, img_grey_r, 1.0-alpha, 0.0, img_grey_r);
+            //// end DEBUG
+
             double t_tmp = (double) getTickCount(); // start clocking total time for motion estimation
             motion_estimator.estimateMotionSparse(img_grey_l, img_grey_r);
             t_est_motion = (double(getTickCount()) - t_tmp)/getTickFrequency(); // end clocking total time for motion estimation

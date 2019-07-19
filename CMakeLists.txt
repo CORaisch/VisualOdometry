@@ -3,7 +3,7 @@ project (Visual_Odometry)
 
 set (CMAKE_CXX_STANDARD 11)
 
-find_package (OpenCV REQUIRED)
+find_package (OpenCV 4.1 REQUIRED PATHS "/home/claudio/libs/opencv-4.1.x/")
 include_directories (${OpenCV_INCLUDE_DIRS} include/)
 
 # collect all cpp and headers
