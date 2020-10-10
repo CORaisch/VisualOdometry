@@ -12,7 +12,7 @@ cmake ..
 make
 ```
 
-# Launch Project on Ubuntu:
+# Launch Project on Ubuntu
 0. download the [KITTI odometry dataset](http://www.cvlibs.net/datasets/kitti/eval_odometry.php) for testing.
 1. the KITTI benchmark suite provides calibration files for the cameras, which need to be passed when runnding the program. But beforehand, the calibration files need to be converted to the YAML specification used in OpenCV. Therefor use the provided python script at `scripts/KITTICalib2OCVYAML.py`. 
 ```bash
@@ -25,7 +25,7 @@ The script has only been tested on python 2.7! It will create a file named `cali
 ```
 where `XX` is a number within [00-21] and indicates the KITTI sequence.
 
-# Programm Usage:
+# Programm Usage
 * when focussing the birdview window (the white one):
   * Press `SPACE` to toggle start/pause of the sequence
   * Press `ESC` to exit
