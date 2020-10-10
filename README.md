@@ -1,7 +1,7 @@
 # VisualOdometry
 Lightweight indirect stereo visual odometry implementation with OpenCV. It based on ORB point-features and uses RANSAC to become robust for outliers during feature matching/tracking.
 
-# Build Project on Debian-Linux
+# Build Project on Ubuntu
 
 1. ensure to have opencv installed.Iif not type: sudo apt-get install libopencv-dev. Note that it's tested only on version 3.3.1, so building OpenCV from https://github.com/opencv/opencv/tree/3.3.1 is recommended.
 2. additionally cmake is required: `sudo apt-get install cmake`
@@ -27,11 +27,11 @@ where `XX` is a number within [00-21] and indicates the KITTI sequence.
 
 # Programm Usage:
 * when focussing the birdview window (the white one):
-..* Press `SPACE` to toggle start/pause of the sequence
-..* Press `ESC` to exit
+  * Press `SPACE` to toggle start/pause of the sequence
+  * Press `ESC` to exit
 * When foccussing the 3D trajectory visualization window:
-..* press `q` or `e` to exit
-..* press `p` to toggle between following the latest frame and free movment with keyboard and mouse
-..* when in free movemnt mode (after pressing `p` once from the beginning):
-...* translate camera with `w`, `a`, `s` and `d` keys
-...* pressing the left mouse button while moving the mouse will rotate the camera
+  * press `q` or `e` to exit
+  * press `p` to toggle between following the latest frame and free movment with keyboard and mouse
+  * when in free movemnt mode (after pressing `p` once from the beginning):
+    * translate camera with `w`, `a`, `s` and `d` keys
+    * pressing the left mouse button while moving the mouse will rotate the camera
