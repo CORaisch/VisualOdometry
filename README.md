@@ -1,5 +1,5 @@
 # VisualOdometry
-Lightweight indirect stereo visual odometry implementation with OpenCV. It based on ORB point-features and uses RANSAC to become robust for outliers during feature matching/tracking.
+Lightweight indirect stereo visual odometry implementation. It uses ORB point-features and embeds motion estimation  inside a RANSAC scheme to become robust to outliers during feature tracking. 
 
 # Build Project on Ubuntu
 
